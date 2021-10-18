@@ -33,6 +33,7 @@ namespace HASmart.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddDbContext<AppDBContext>(opt => opt.UseMySql(Configuration.GetConnectionString("HASmartContext"), ServerVersion.AutoDetect(Configuration.GetConnectionString("HASmartContext"))));
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
             services.AddTransient<ICidadaoRepository, CidadaoRepository>();
@@ -68,6 +69,10 @@ namespace HASmart.WebApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HASmart.WebApi v1"));
             }
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
             app.UseHttpsRedirection();
 

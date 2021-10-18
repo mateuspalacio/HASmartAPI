@@ -24,6 +24,11 @@ namespace HASmart.WebApi.Controllers {
         public CidadaosController(CidadaoService service) {
             this.service = service;
         }
+        [HttpGet("health")]
+        public async Task<ActionResult<string>> Health()
+        {
+            return "Ok";
+        }
 
         /// <summary>
         /// Consulta os dados de um cidadão por meio do CPF ou RG do cidadão.
