@@ -92,6 +92,12 @@ namespace HASmart.Infrastructure.EFDataAccess {
             //    Nome = "Joao Manoel",
             //    Senha = "Hasmart2021@JoaoManoel"
             //});
+            //modelBuilder.Entity<Medico>().HasData(new Medico
+            //{
+            //    Id = Guid.NewGuid(),
+            //    Nome = "coordhasmart",
+            //    Senha = "coord123"
+            //});
             //modelBuilder.Entity<Cidadao>().HasData(new Cidadao
             //{
             //    Id = Guid.NewGuid(),

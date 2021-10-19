@@ -13,6 +13,7 @@ using HASmart.Core.Extensions;
 using HASmart.Core.Repositories;
 using System.IO;
 using System.Text.Json;
+using CsvHelper;
 
 namespace HASmart.Core.Services {
     public class CidadaoService : IServiceBase<Cidadao> {
@@ -96,83 +97,94 @@ namespace HASmart.Core.Services {
             await this.CidadaoRepositorio.Relatorio(r);
             return r;
         }
-        //public async Task<IEnumerable<Cidadao>> RegistroCSV(string url){
-        //    TextReader reader = new StreamReader(url);
-        //    var csvReader = new CsvReader(reader, System.Globalization.CultureInfo.InvariantCulture);
-        //   // csvReader.Context.RegisterClassMap<CidadaoMap>();
-        //    var records = new List<Cidadao>();
-        //    csvReader.Read();
-        //    csvReader.ReadHeader();
-        //    while(csvReader.Read()){
-        //        var cpf = csvReader.GetField("cpf");
-        //        var rg = csvReader.GetField("rg");
-        //        int index = csvReader.GetField("dataHora").IndexOf(" "); // gets index of first occurrence of blank space, which in this case separates the date from the time.
+        public async Task<IEnumerable<Cidadao>> RegistroCSV(string url)
+        {
+            TextReader reader = new StreamReader(url);
+            var csvReader = new CsvReader(reader, System.Globalization.CultureInfo.InvariantCulture);
+            // csvReader.Context.RegisterClassMap<CidadaoMap>();
+            var records = new List<Cidadao>();
+            csvReader.Read();
+            csvReader.ReadHeader();
+            while (csvReader.Read())
+            {
+                var cpf = csvReader.GetField("cpf");
+                var rg = csvReader.GetField("rg");
+                int index = csvReader.GetField("dataHora").IndexOf(" "); // gets index of first occurrence of blank space, which in this case separates the date from the time.
 
-        //        if (await this.CidadaoRepositorio.AlreadyExists(cpf, rg)) {
+                if (await this.CidadaoRepositorio.AlreadyExists(cpf, rg))
+                {
 
-        //        Cidadao cidadao = await BuscarViaCpf(cpf);
-        //        MedicaoPostDTO medidto = new MedicaoPostDTO() {
-        //        Afericoes = new List<AfericaoPostDTO>{new AfericaoPostDTO{Sistolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.sistolica")), Diastolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.diastolica"))},new AfericaoPostDTO{Sistolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.sistolica")), Diastolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.diastolica"))}},
-        //        Peso = float.Parse(csvReader.GetField("medicoes.peso"), System.Globalization.CultureInfo.InvariantCulture.NumberFormat), 
-        //        Medicamentos = new List<MedicamentoPostDTO>{new MedicamentoPostDTO{Nome= csvReader.GetField("medicoes.medicamentos")}}
+                    Cidadao cidadao = await BuscarViaCpf(cpf);
+                    MedicaoPostDTO medidto = new MedicaoPostDTO()
+                    {
+                        Afericoes = new List<AfericaoPostDTO> { new AfericaoPostDTO { Sistolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.sistolica")), Diastolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.diastolica")) }, new AfericaoPostDTO { Sistolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.sistolica")), Diastolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.diastolica")) } },
+                        Peso = float.Parse(csvReader.GetField("medicoes.peso"), System.Globalization.CultureInfo.InvariantCulture.NumberFormat),
+                        Medicamentos = new List<MedicamentoPostDTO> { new MedicamentoPostDTO { Nome = csvReader.GetField("medicoes.medicamentos") } }
 
-        //        };
-        //        Cidadao d = await FarmaciaService.RegistrarMedicao((long)cidadao.Id, medidto);
-        //        var x = d.Medicoes.Count();
-        //        d.Medicoes[x-1].DataHora = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-        //        await this.CidadaoRepositorio.Atualizar(d);
-        //        records.Add(d);
-        //    } else {
+                    };
+                    Cidadao d = await FarmaciaService.RegistrarMedicao(cidadao.Id, medidto);
+                    var x = d.Medicoes.Count();
+                    d.Medicoes[x - 1].DataHora = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                    await this.CidadaoRepositorio.Atualizar(d);
+                    records.Add(d);
+                }
+                else
+                {
 
-        //        var record=new Cidadao(){
-        //            Nome=csvReader.GetField("nome"),
-        //            Cpf=csvReader.GetField("cpf"),
-        //            Rg=csvReader.GetField("rg"),
-        //            DataNascimento= DateTime.ParseExact(DateTime.ParseExact(csvReader.GetField("dataNascimento"), "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture),
-        //            DataCadastro= DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataCadastro"), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture),
-        //            DadosPessoais = new DadosPessoais(){
-        //                Email = csvReader.GetField("dadosPessoais.email"),
-        //                Telefone = csvReader.GetField("dadosPessoais.telefone"),
-        //                Genero = csvReader.GetField("dadosPessoais.genero"),
-        //                Endereco = new Endereco(){
-        //                    CEP = csvReader.GetField("dadosPessoais.endereco.cep"),
-        //                    Rua = csvReader.GetField("dadosPessoais.endereco.rua"),
-        //                    Numero = csvReader.GetField("dadosPessoais.endereco.numero"),
-        //                    Complemento = csvReader.GetField("dadosPessoais.endereco.complemento"),
-        //                    Cidade = csvReader.GetField("dadosPessoais.endereco.cidade"),
-        //                    Estado = csvReader.GetField("dadosPessoais.endereco.estado")
-        //                }
-        //            },
-        //            IndicadorRiscoHAS = new IndicadorRiscoHAS(){
-        //                Altura = float.Parse(csvReader.GetField("indicadorRiscoHAS.altura"), System.Globalization.CultureInfo.InvariantCulture.NumberFormat),
-        //                Diabetico = (TipoDiabetes)Enum.Parse(typeof(TipoDiabetes), csvReader.GetField("indicadorRiscoHAS.diabetico")),
-        //                Fumante = (TipoFumante)Enum.Parse(typeof(TipoFumante), csvReader.GetField("indicadorRiscoHAS.fumante")),
-        //                DoencaRenalCronica = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.doencaRenalCronica")),
-        //                InsuficienciaCardiaca = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.insuficienciaCardiaca")),
-        //                DoencaArterialObstrutivaPeriferica = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.doencaArterialObstrutivaPeriferica")),
-        //                HistoricoAvc = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.historicoAVC")),
-        //                RetinopatiaHipertensiva = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.retinopatiaHipertensiva")),
+                    var record = new Cidadao()
+                    {
+                        Nome = csvReader.GetField("nome"),
+                        Cpf = csvReader.GetField("cpf"),
+                        Rg = csvReader.GetField("rg"),
+                        DataNascimento = DateTime.ParseExact(DateTime.ParseExact(csvReader.GetField("dataNascimento"), "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture),
+                        DataCadastro = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataCadastro"), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture),
+                        DadosPessoais = new DadosPessoais()
+                        {
+                            Email = csvReader.GetField("dadosPessoais.email"),
+                            Telefone = csvReader.GetField("dadosPessoais.telefone"),
+                            Genero = csvReader.GetField("dadosPessoais.genero"),
+                            Endereco = new Endereco()
+                            {
+                                CEP = csvReader.GetField("dadosPessoais.endereco.cep"),
+                                Rua = csvReader.GetField("dadosPessoais.endereco.rua"),
+                                Numero = csvReader.GetField("dadosPessoais.endereco.numero"),
+                                Complemento = csvReader.GetField("dadosPessoais.endereco.complemento"),
+                                Cidade = csvReader.GetField("dadosPessoais.endereco.cidade"),
+                                Estado = csvReader.GetField("dadosPessoais.endereco.estado")
+                            }
+                        },
+                        IndicadorRiscoHAS = new IndicadorRiscoHAS()
+                        {
+                            Altura = float.Parse(csvReader.GetField("indicadorRiscoHAS.altura"), System.Globalization.CultureInfo.InvariantCulture.NumberFormat),
+                            Diabetico = (TipoDiabetes)Enum.Parse(typeof(TipoDiabetes), csvReader.GetField("indicadorRiscoHAS.diabetico")),
+                            Fumante = (TipoFumante)Enum.Parse(typeof(TipoFumante), csvReader.GetField("indicadorRiscoHAS.fumante")),
+                            DoencaRenalCronica = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.doencaRenalCronica")),
+                            InsuficienciaCardiaca = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.insuficienciaCardiaca")),
+                            DoencaArterialObstrutivaPeriferica = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.doencaArterialObstrutivaPeriferica")),
+                            HistoricoAvc = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.historicoAVC")),
+                            RetinopatiaHipertensiva = (TipoComorbidade)Enum.Parse(typeof(TipoComorbidade), csvReader.GetField("indicadorRiscoHAS.retinopatiaHipertensiva")),
 
-        //            }
+                        }
 
-        //        };
-        //        await this.CidadaoRepositorio.Cadastrar(record);
-        //        MedicaoPostDTO medidto = new MedicaoPostDTO() {
-        //        Afericoes = new List<AfericaoPostDTO>{new AfericaoPostDTO{Sistolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.sistolica")), Diastolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.diastolica"))},new AfericaoPostDTO{Sistolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.sistolica")), Diastolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.diastolica"))}},
-        //        Peso = float.Parse(csvReader.GetField("medicoes.peso"), System.Globalization.CultureInfo.InvariantCulture.NumberFormat), 
-        //        Medicamentos = new List<MedicamentoPostDTO>{new MedicamentoPostDTO{Nome= csvReader.GetField("medicoes.medicamentos")}}
+                    };
+                    await this.CidadaoRepositorio.Cadastrar(record);
+                    MedicaoPostDTO medidto = new MedicaoPostDTO()
+                    {
+                        Afericoes = new List<AfericaoPostDTO> { new AfericaoPostDTO { Sistolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.sistolica")), Diastolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.diastolica")) }, new AfericaoPostDTO { Sistolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.sistolica")), Diastolica = UInt32.Parse(csvReader.GetField("medicoes.afericoes.diastolica")) } },
+                        Peso = float.Parse(csvReader.GetField("medicoes.peso"), System.Globalization.CultureInfo.InvariantCulture.NumberFormat),
+                        Medicamentos = new List<MedicamentoPostDTO> { new MedicamentoPostDTO { Nome = csvReader.GetField("medicoes.medicamentos") } }
 
-        //        };
-        //        Cidadao d = await FarmaciaService.RegistrarMedicao((long)record.Id, medidto);
-        //        var x = d.Medicoes.Count();
-        //        d.Medicoes[x-1].DataHora = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-        //        await this.CidadaoRepositorio.Atualizar(d);
-        //        records.Add(d);
-        //        }
+                    };
+                    Cidadao d = await FarmaciaService.RegistrarMedicao(record.Id, medidto);
+                    var x = d.Medicoes.Count();
+                    d.Medicoes[x - 1].DataHora = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                    await this.CidadaoRepositorio.Atualizar(d);
+                    records.Add(d);
+                }
 
-        //    }
-        //    return records;
+            }
+            return records;
 
-        //}
+        }
     }
 }
