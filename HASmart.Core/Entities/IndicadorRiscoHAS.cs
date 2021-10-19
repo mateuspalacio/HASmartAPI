@@ -48,7 +48,7 @@ namespace HASmart.Core.Entities {
         [JsonIgnore]
         public Cidadao Cidadao { get; set; }
         [Required]
-        [Range(0.5f, 3.0f, ErrorMessage = mensagemErroAltura)]
+        //[Range(0.5f, 3.0f, ErrorMessage = mensagemErroAltura)]
         public float Altura { get; set; }
         [Required]
         [IsValidEnumValue(typeof(TipoDiabetes), ErrorMessage = mensagemErroDiabetes)]
