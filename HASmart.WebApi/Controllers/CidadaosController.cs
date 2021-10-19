@@ -159,11 +159,11 @@ namespace HASmart.WebApi.Controllers {
         [HttpPost("CSV")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<IEnumerable<Cidadao>>> PostCSV([FromBody] string url)
+        public async Task<ActionResult<IEnumerable<Cidadao>>> PostCSV([FromForm] FilePostDTO file)
         {
             try
             {
-                IEnumerable<Cidadao> c = await service.RegistroCSV(url);
+                IEnumerable<Cidadao> c = await service.RegistroComArquivo(file.File);
                 return Ok(c);
             }
             catch (EntityValidationException e)

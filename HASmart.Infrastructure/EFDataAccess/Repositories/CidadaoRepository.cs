@@ -24,136 +24,150 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories {
 
         //Retirado .Include(x => x.Dispencacoes) dos 3 metodos abaixo
         public async Task<Cidadao> BuscarViaId(Guid id) {
-            var user = await Context.Cidadaos
+            if (Context.Cidadaos.Any(c => c.Id == id))
+            {
+                var user = await Context.Cidadaos
                  .FirstOrDefaultAsync(u => u.Id == id);
 
-            user.DadosPessoais = await Context.DadosPessoais
-                .FirstOrDefaultAsync(up => up.CidadaoId == id);
+                user.DadosPessoais = await Context.DadosPessoais
+                    .FirstOrDefaultAsync(up => up.CidadaoId == id);
 
-            user.DadosPessoais.Endereco = await Context.Enderecos
-                .FirstOrDefaultAsync(add => add.DadosPessoais_Id == user.DadosPessoais.DadosPessoaisId);
+                user.DadosPessoais.Endereco = await Context.Enderecos
+                    .FirstOrDefaultAsync(add => add.DadosPessoais_Id == user.DadosPessoais.DadosPessoaisId);
 
-            user.IndicadorRiscoHAS = await Context.IndicadorRiscos
-                .FirstOrDefaultAsync(ris => ris.Cidadao_Id == id);
+                user.IndicadorRiscoHAS = await Context.IndicadorRiscos
+                    .FirstOrDefaultAsync(ris => ris.Cidadao_Id == id);
 
-            user.Medicoes = await Context.Medicoes
-                .Where(x => x.CidadaoId == id).ToListAsync();
-            foreach (var med in user.Medicoes)
-            {
-                med.Afericoes = await Context.Afericao
-                    .Where(afe => afe.MedicaoId == med.Id).ToListAsync();
-
-                med.Medicamentos = await Context.Medicamentos
-                    .Where(md => md.MedicaoId == med.Id).ToListAsync();
-            }
-            //user.medicoAtual = await Context.Medicos.Where(r => r.cidadaosAtuais.FirstOrDefault().Id == user.Id).FirstOrDefaultAsync();
-            foreach (var medic in Context.Medicos)
-            {
-                if (medic.cidadaosAtuais != null)
+                user.Medicoes = await Context.Medicoes
+                    .Where(x => x.CidadaoId == id).ToListAsync();
+                foreach (var med in user.Medicoes)
                 {
-                    foreach (var cit in medic.cidadaosAtuais)
+                    med.Afericoes = await Context.Afericao
+                        .Where(afe => afe.MedicaoId == med.Id).ToListAsync();
+
+                    med.Medicamentos = await Context.Medicamentos
+                        .Where(md => md.MedicaoId == med.Id).ToListAsync();
+                }
+                //user.medicoAtual = await Context.Medicos.Where(r => r.cidadaosAtuais.FirstOrDefault().Id == user.Id).FirstOrDefaultAsync();
+                foreach (var medic in Context.Medicos)
+                {
+                    if (medic.cidadaosAtuais != null)
                     {
-                        if (cit.Id == id)
+                        foreach (var cit in medic.cidadaosAtuais)
                         {
-                            user.medicoAtual = medic;
+                            if (cit.Id == id)
+                            {
+                                user.medicoAtual = medic;
+                            }
                         }
                     }
                 }
+                user.Relatorios = await Context.Relatorios
+                    .Where(rel => rel.CidadaoId == user.Id).ToListAsync();
+                return user;
             }
-            user.Relatorios = await Context.Relatorios
-                .Where(rel => rel.CidadaoId == user.Id).ToListAsync();
             //Cidadao c = await this.Context.Cidadaos.Include(x => x.Medicoes).FirstOrDefaultAsync(x => x.Id == id);
-            return user ?? throw new EntityNotFoundException(typeof(Cidadao));
+            throw new EntityNotFoundException(typeof(Cidadao));
         }
 
         public async Task<Cidadao> BuscarViaCpf(string cpf) {
-            var user = await Context.Cidadaos
+           
+            if(Context.Cidadaos.Any(c => c.Cpf == cpf))
+            {
+                var user = await Context.Cidadaos
                  .FirstOrDefaultAsync(u => u.Cpf == cpf);
 
-            user.DadosPessoais = await Context.DadosPessoais
-                .FirstOrDefaultAsync(up => up.CidadaoId == user.Id);
+                user.DadosPessoais = await Context.DadosPessoais
+                    .FirstOrDefaultAsync(up => up.CidadaoId == user.Id);
 
-            user.DadosPessoais.Endereco = await Context.Enderecos
-                .FirstOrDefaultAsync(add => add.DadosPessoais_Id == user.DadosPessoais.DadosPessoaisId);
+                user.DadosPessoais.Endereco = await Context.Enderecos
+                    .FirstOrDefaultAsync(add => add.DadosPessoais_Id == user.DadosPessoais.DadosPessoaisId);
 
-            user.IndicadorRiscoHAS = await Context.IndicadorRiscos
-                .FirstOrDefaultAsync(ris => ris.Cidadao_Id == user.Id);
+                user.IndicadorRiscoHAS = await Context.IndicadorRiscos
+                    .FirstOrDefaultAsync(ris => ris.Cidadao_Id == user.Id);
 
-            user.Medicoes = await Context.Medicoes
-                .Where(med => med.CidadaoId == user.Id).ToListAsync();
+                user.Medicoes = await Context.Medicoes
+                    .Where(med => med.CidadaoId == user.Id).ToListAsync();
 
-            foreach (var med in user.Medicoes)
-            {
-                med.Afericoes = await Context.Afericao
-                    .Where(afe => afe.MedicaoId == med.Id).ToListAsync();
-
-                med.Medicamentos = await Context.Medicamentos
-                    .Where(md => md.MedicaoId == med.Id).ToListAsync();
-            }
-            foreach( var medic in Context.Medicos)
-            {
-                if(medic.cidadaosAtuais != null)
+                foreach (var med in user.Medicoes)
                 {
-                    foreach (var cit in medic.cidadaosAtuais)
+                    med.Afericoes = await Context.Afericao
+                        .Where(afe => afe.MedicaoId == med.Id).ToListAsync();
+
+                    med.Medicamentos = await Context.Medicamentos
+                        .Where(md => md.MedicaoId == med.Id).ToListAsync();
+                }
+                foreach (var medic in Context.Medicos)
+                {
+                    if (medic.cidadaosAtuais != null)
                     {
-                        if (cit.Id == user.Id)
+                        foreach (var cit in medic.cidadaosAtuais)
                         {
-                            user.medicoAtual = medic;
+                            if (cit.Id == user.Id)
+                            {
+                                user.medicoAtual = medic;
+                            }
                         }
                     }
+
                 }
-                
+                user.Relatorios = await Context.Relatorios
+                    .Where(rel => rel.CidadaoId == user.Id).ToListAsync();
+                return user;
             }
-            user.Relatorios = await Context.Relatorios
-                .Where(rel => rel.CidadaoId == user.Id).ToListAsync();
+            
             //user.medicoAtual = await Context.Medicos.Select(md => md.cidadaosAtuais);
             //user.medicoAtual = await Context.Medicos.FirstOrDefaultAsync(r => r.cidadaosAtuais.FirstOrDefault().Id == user.Id);
 
 
             //Cidadao c = await this.Context.Cidadaos.Include(x => x.Medicoes).FirstOrDefaultAsync(x => x.Id == id);
-            return user ?? throw new EntityNotFoundException(typeof(Cidadao));
+            throw new EntityNotFoundException(typeof(Cidadao));
         }
 
         public async Task<Cidadao> BuscarViaRg(string rg) {
-            var user = await Context.Cidadaos
+            if (Context.Cidadaos.Any(c => c.Rg == rg))
+            {
+                var user = await Context.Cidadaos
                  .FirstOrDefaultAsync(u => u.Rg == rg);
 
-            user.DadosPessoais = await Context.DadosPessoais
-                .FirstOrDefaultAsync(up => up.CidadaoId == user.Id);
+                user.DadosPessoais = await Context.DadosPessoais
+                    .FirstOrDefaultAsync(up => up.CidadaoId == user.Id);
 
-            user.DadosPessoais.Endereco = await Context.Enderecos
-                .FirstOrDefaultAsync(add => add.DadosPessoais_Id == user.DadosPessoais.DadosPessoaisId);
+                user.DadosPessoais.Endereco = await Context.Enderecos
+                    .FirstOrDefaultAsync(add => add.DadosPessoais_Id == user.DadosPessoais.DadosPessoaisId);
 
-            user.IndicadorRiscoHAS = await Context.IndicadorRiscos
-                .FirstOrDefaultAsync(ris => ris.Cidadao_Id == user.Id);
-            user.Medicoes = await Context.Medicoes
-               .Where(med => med.CidadaoId == user.Id).ToListAsync();
+                user.IndicadorRiscoHAS = await Context.IndicadorRiscos
+                    .FirstOrDefaultAsync(ris => ris.Cidadao_Id == user.Id);
+                user.Medicoes = await Context.Medicoes
+                   .Where(med => med.CidadaoId == user.Id).ToListAsync();
 
-            foreach (var med in user.Medicoes)
-            {
-                med.Afericoes = await Context.Afericao
-                    .Where(afe => afe.MedicaoId == med.Id).ToListAsync();
-
-                med.Medicamentos = await Context.Medicamentos
-                    .Where(md => md.MedicaoId == med.Id).ToListAsync();
-            }
-            foreach (var medic in Context.Medicos)
-            {
-                if (medic.cidadaosAtuais != null)
+                foreach (var med in user.Medicoes)
                 {
-                    foreach (var cit in medic.cidadaosAtuais)
+                    med.Afericoes = await Context.Afericao
+                        .Where(afe => afe.MedicaoId == med.Id).ToListAsync();
+
+                    med.Medicamentos = await Context.Medicamentos
+                        .Where(md => md.MedicaoId == med.Id).ToListAsync();
+                }
+                foreach (var medic in Context.Medicos)
+                {
+                    if (medic.cidadaosAtuais != null)
                     {
-                        if (cit.Id == user.Id)
+                        foreach (var cit in medic.cidadaosAtuais)
                         {
-                            user.medicoAtual = medic;
+                            if (cit.Id == user.Id)
+                            {
+                                user.medicoAtual = medic;
+                            }
                         }
                     }
                 }
+                user.Relatorios = await Context.Relatorios
+                    .Where(rel => rel.CidadaoId == user.Id).ToListAsync();
+                return user;
             }
-            user.Relatorios = await Context.Relatorios
-                .Where(rel => rel.CidadaoId == user.Id).ToListAsync();
             //Cidadao c = await this.Context.Cidadaos.Include(x => x.Medicoes).FirstOrDefaultAsync(x => x.Id == id);
-            return user ?? throw new EntityNotFoundException(typeof(Cidadao));
+            throw new EntityNotFoundException(typeof(Cidadao));
         }
 
         public async Task<bool> AlreadyExists(string cpf, string rg) {
