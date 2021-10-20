@@ -128,10 +128,23 @@ namespace HASmart.Core.Services {
 
                     if (await this.CidadaoRepositorio.AlreadyExists(cpfNovo, rg))
                     {
-                        
-                        
-                        
-                            Cidadao cidadao = await BuscarViaCpf(cpfNovo);
+                        DateTime dtMedicao;
+                        if (DateTime.TryParseExact(csvReader.GetField("dataCadastro"), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None,
+                            out dtMedicao
+                            ))
+                        {
+                            dtMedicao = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                        } else if (DateTime.TryParseExact(csvReader.GetField("dataCadastro"), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None,
+                            out dtMedicao
+                            ))
+                        {
+                            dtMedicao = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            dtMedicao = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture); ;
+                        }
+                        Cidadao cidadao = await BuscarViaCpf(cpfNovo);
                             List<AfericaoPostDTO> listAfe = new List<AfericaoPostDTO>();
                             for (int i = 0; i <= 1; i++)
                             {
@@ -156,7 +169,7 @@ namespace HASmart.Core.Services {
                             };
                             Cidadao d = await FarmaciaService.RegistrarMedicao(cidadao.Id, medidto);
                             var x = d.Medicoes.Count();
-                            d.Medicoes[x - 1].DataHora = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                            d.Medicoes[x - 1].DataHora = dtMedicao;
                             await this.CidadaoRepositorio.Atualizar(d);
                             records.Add(d);
                         
@@ -166,6 +179,8 @@ namespace HASmart.Core.Services {
                         {
                         cpfNovo = "0";
                         float altura = 0;
+                        DateTime dtCadastro;
+                        DateTime dtMedicao;
                             if(csvReader.GetField("cpf").Length == 10)
                         {
                             cpfNovo += csvReader.GetField("cpf");
@@ -177,13 +192,24 @@ namespace HASmart.Core.Services {
                         {
                             altura = float.Parse(csvReader.GetField("indicadorRiscoHAS.altura"), System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
                         }
+                        if (DateTime.TryParseExact(csvReader.GetField("dataCadastro"), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None,
+                            out dtCadastro
+                            ))
+                        {
+                            dtCadastro = DateTime.ParseExact(DateTime.ParseExact(csvReader.GetField("dataCadastro"), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                            dtMedicao = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                        } else
+                        {
+                            dtCadastro = DateTime.ParseExact(DateTime.ParseExact(csvReader.GetField("dataCadastro"), "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                            dtMedicao = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture); ;
+                        }
                             var record = new Cidadao()
                             {
                                 Nome = csvReader.GetField("nome"),
                                 Cpf = cpfNovo,
                                 Rg = csvReader.GetField("rg"),
                                 DataNascimento = DateTime.ParseExact(csvReader.GetField("dataNascimento"), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture),
-                                DataCadastro = DateTime.ParseExact(DateTime.ParseExact(csvReader.GetField("dataCadastro"), "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture),
+                                DataCadastro = dtCadastro,
                                 DadosPessoais = new DadosPessoais()
                                 {
                                     Email = csvReader.GetField("dadosPessoais.email"),
@@ -238,7 +264,7 @@ namespace HASmart.Core.Services {
                             };
                             Cidadao d = await FarmaciaService.RegistrarMedicao(record.Id, medidto);
                             var x = d.Medicoes.Count();
-                            d.Medicoes[x - 1].DataHora = DateTime.ParseExact((DateTime.ParseExact(csvReader.GetField("dataHora"), "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)).Substring(0, index), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                            d.Medicoes[x - 1].DataHora = dtMedicao;
                             await this.CidadaoRepositorio.Atualizar(d);
                             records.Add(d);
                         }
