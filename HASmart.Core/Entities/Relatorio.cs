@@ -1,6 +1,8 @@
 ﻿using HASmart.Core.Architecture;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -29,6 +31,8 @@ namespace HASmart.Core.Entities
         [Column(TypeName = "CHAR(36)")]
         public Guid CidadaoId { get; set; }
         public TipoContato TipoContato { get; set; }
+        [DataType(DataType.Date)]
+        [DefaultValue("20/01/2000")]
         public DateTime DataRelatorio { get; set; } = DateTime.Now.Date;
 
     }
