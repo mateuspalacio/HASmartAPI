@@ -194,26 +194,65 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories {
                 }
             }
         }
-
-        public async Task<Relatorio> Relatorio(Relatorio r)
+        public async Task<Cidadao> ApagarCidadao(Cidadao cidadao)
         {
             try
             {
-                Context.Relatorios.Add(r);
-                r.Cidadao = await Context.Cidadaos.FirstOrDefaultAsync(c => c.Id == r.CidadaoId);
-                await this.Context.SaveChangesAsync();
-                return r;
+                Context.Cidadaos.Remove(cidadao);
+                await Context.SaveChangesAsync();
+                return cidadao;
             }
-            catch
+            catch (Exception)
             {
-                if (!await this.Context.Cidadaos.AnyAsync(e => e.Id == r.CidadaoId))
+                if (!await this.Context.Cidadaos.AnyAsync(e => e.Id == cidadao.Id))
                 {
                     throw new EntityNotFoundException(typeof(Cidadao));
-                } else
+                }
+                else
                 {
                     throw new EntityConcurrencyException(typeof(Cidadao));
                 }
             }
         }
+        public async Task<List<Cidadao>> BuscarPorNome(string name)
+        {
+            try
+            {
+                var result = await Context.Cidadaos.Where(data => data.Nome.ToLower().Contains(name.ToLower())).ToListAsync();
+                return result;
+            }
+            catch (Exception)
+            {
+                if (!await this.Context.Cidadaos.AnyAsync(e => e.Nome == name))
+                {
+                    throw new EntityNotFoundException(typeof(Cidadao));
+                }
+                else
+                {
+                    throw new EntityConcurrencyException(typeof(Cidadao));
+                }
+            }
+        }
+
+        public async Task<List<Cidadao>> BuscarPorNomeAnonimo(string name)
+        {
+            try
+            {
+                var result = await Context.Cidadaos.Where(data => data.AnonimoNome.ToLower().Contains(name.ToLower())).ToListAsync();
+                return result;
+            }
+            catch (Exception)
+            {
+                if (!await this.Context.Cidadaos.AnyAsync(e => e.Nome == name))
+                {
+                    throw new EntityNotFoundException(typeof(Cidadao));
+                }
+                else
+                {
+                    throw new EntityConcurrencyException(typeof(Cidadao));
+                }
+            }
+        }
+
     }
 }

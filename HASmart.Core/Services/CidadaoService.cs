@@ -61,6 +61,7 @@ namespace HASmart.Core.Services {
             if (await this.CidadaoRepositorio.AlreadyExists(c.Cpf, c.Rg)) {
                 throw new EntityValidationException(c.GetType(), "Cidadão", "Já existe um cidadão com o mesmo CPF ou RG");
             }
+            c.AnonimoNome = await AnonimizarNome(c.Nome, c.Cpf, c.DataNascimento);
             return await this.CidadaoRepositorio.Cadastrar(c);
         }
 
@@ -89,15 +90,66 @@ namespace HASmart.Core.Services {
             Cidadao cid = await FarmaciaService.RegistrarMedicao(c.Id, dto.MedicaoPostDTO);
             return cid;
         }
-
-        public async Task<Relatorio> CadastrarRelatorio(Guid id, RelatorioPostDTO dto)
+        public async Task<List<Cidadao>> BuscarCidadaosPorNome(string name)
         {
-            dto.ThrowIfInvalid();
+            if(string.IsNullOrEmpty(name))
+                throw new EntityValidationException(typeof(Cidadao), "Nome", "O nome para busca não pode ser vazio");
+            var c = await CidadaoRepositorio.BuscarPorNome(name);
+            return c;
+        }
+        public async Task<List<Cidadao>> BuscarCidadaosPorNomeAnonimo(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new EntityValidationException(typeof(Cidadao), "Nome Anônimo", "O nome anônimo para busca não pode ser vazio");
+            var c = await CidadaoRepositorio.BuscarPorNomeAnonimo(name);
+            return c;
+        }
+        public async Task<Cidadao> ApagarCidadao(Guid id)
+        {
+            if (string.IsNullOrEmpty(id.ToString()))
+                throw new EntityValidationException(typeof(Cidadao), "Id", "O Id para apagar não pode ser vazio");
 
-            Relatorio r = Mapper.Map<Relatorio>(dto);
-            r.CidadaoId = id;
-            await this.CidadaoRepositorio.Relatorio(r);
-            return r;
+            Cidadao c = await BuscarViaId(id);
+
+            var apagado = await CidadaoRepositorio.ApagarCidadao(c);
+            return apagado;
+        }
+        public async Task<Cidadao> AnonimizarNome(Guid id)
+        {
+            if (string.IsNullOrEmpty(id.ToString()))
+                throw new EntityValidationException(typeof(Cidadao), "Id", "O Id para anonimizar não pode ser vazio");
+
+            Cidadao c = await BuscarViaId(id);
+            if (!string.IsNullOrEmpty(c.AnonimoNome))
+                throw new EntityAlreadyCreatedException(typeof(Cidadao), "Este cidadão já possui um nome anônimo");
+
+            char[] charsNome = c.Nome.ToCharArray();
+            char[] charsCpf = c.Cpf.ToCharArray();
+
+            string nomeCodigoAnonimo = $"{c.DataCadastro.Year}{c.DataCadastro.Hour}{charsNome[0]}{charsCpf[3]}{c.DataCadastro.Minute}{charsNome[charsNome.Length - 1]}{charsCpf[charsCpf.Length - 1]}{DateTime.Now.Millisecond * 1000}HASmart{Convert.ToChar(DateTime.Now.Day)}{Convert.ToChar(c.DataNascimento.Day)}";
+            c.AnonimoNome = nomeCodigoAnonimo;
+
+            var update = await CidadaoRepositorio.Atualizar(c);
+            return update;
+
+        }
+        // este método é pra o próprio sistema anonimizar o cidadao, nao deve ser usado por usuarios
+        public async Task<string> AnonimizarNome(string nome, string cpf, DateTime dataNascimento)
+        {
+            //if (string.IsNullOrEmpty(id.ToString()))
+            //    throw new EntityValidationException(typeof(Cidadao), "Id", "O Id para anonimizar não pode ser vazio");
+
+            //Cidadao c = await BuscarViaId(id);
+            //if (!string.IsNullOrEmpty(c.AnonimoNome))
+            //    throw new EntityAlreadyCreatedException(typeof(Cidadao), "Este cidadão já possui um nome anônimo");
+
+            char[] charsNome = nome.ToCharArray();
+            char[] charsCpf = cpf.ToCharArray();
+
+            string nomeCodigoAnonimo = $"{DateTime.Now.Year}{DateTime.Now.Hour}{charsNome[0]}{charsCpf[3]}{DateTime.Now.Minute}{charsNome[charsNome.Length - 1]}{charsCpf[charsCpf.Length - 1]}{DateTime.Now.Millisecond * 1000}HASmart{Convert.ToChar(DateTime.Now.Day)}{Convert.ToChar(dataNascimento.Day)}";
+
+            return nomeCodigoAnonimo;
+
         }
         public async Task<IEnumerable<Cidadao>> RegistroComArquivo(IFormFile file)
         {

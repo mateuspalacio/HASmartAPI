@@ -39,9 +39,11 @@ namespace HASmart.WebApi
             services.AddTransient<ICidadaoRepository, CidadaoRepository>();
             services.AddTransient<IFarmaciaRepository, FarmaciaRepository>();
             services.AddTransient<IMedicoRepository, MedicoRepository>();
+            services.AddTransient<IRelatoRepository, RelatoRepository>();
             services.AddTransient<CidadaoService>();
             services.AddTransient<FarmaciaService>();
             services.AddTransient<MedicoService>();
+            services.AddTransient<RelatoService>();
 
             IsoDateTimeConverter converter = new IsoDateTimeConverter
             {

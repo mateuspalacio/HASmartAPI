@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 namespace HASmart.Core.Entities {
     public class Cidadao : AggregateRoot {
         public string Nome { get; set; }
+        public string AnonimoNome { get; set; }
         public string Cpf { get; set; }
         public string Rg { get; set; }
         

@@ -80,6 +80,31 @@ namespace HASmart.WebApi.Controllers {
         }
 
         /// <summary>
+        /// Retorna todos os cidadãos que tem um nome.
+        /// </summary>
+        /// <param nome="nome">do cidadão.</param>
+        // GET: api/Cidadaos/nome
+        [HttpGet("nome/{nome}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Cidadao>>> GetCidadaoByName(string nome)
+        {
+            return (await service.BuscarCidadaosPorNome(nome)).ToList();
+        }
+
+        /// <summary>
+        /// Retorna todos os cidadãos que tem um nome anônimo.
+        /// </summary>
+        /// <param nome="nome"> anônimo do cidadão.</param>
+        // GET: api/Cidadaos/nome
+        [HttpGet("nome/{nome}/anonimo")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Cidadao>>> GetCidadaoByNameAnonimo(string nome)
+        {
+            return (await service.BuscarCidadaosPorNomeAnonimo(nome)).ToList();
+        }
+
+
+        /// <summary>
         /// Cadastra um cidadão.
         /// </summary>
         // POST: api/Cidadaos
@@ -133,20 +158,57 @@ namespace HASmart.WebApi.Controllers {
         }
 
         /// <summary>
-        /// Cadastra uma opinião de um cidadão.
+        /// Deleta os dados do cidadão por meio do ID.
         /// </summary>
-        // POST: api/Cidadaos/Relatorio
-        [HttpPost("Relatorio/{id}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        /// <param name="id">do cidadão.</param>
+        // DELETE: api/Cidadaos/5
+        [HttpDelete("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<Relatorio>> PostRelatorio(Guid id, [FromBody] RelatorioPostDTO dto)
+        public async Task<IActionResult> DeleteCidadao(Guid id)
         {
             try
             {
-                Relatorio r = await this.service.CadastrarRelatorio(id, dto);
-                return r;
+                Cidadao cidadao = await service.ApagarCidadao(id);
+                return this.Ok(cidadao);
             }
             catch (EntityValidationException e)
+            {
+                return this.HandleError(e);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return this.HandleError(e);
+            }
+            catch (EntityConcurrencyException e)
+            {
+                return this.HandleError(e);
+            }
+        }
+
+        /// <summary>
+        /// Atualiza os dados do cidadão por meio do ID.
+        /// </summary>
+        /// <param name="id">do cidadão.</param>
+        /// <param name="dto"></param>
+        // POST: api/Cidadaos/5
+        [HttpPost("{id}/anonimizar")]
+        [AllowAnonymous]
+        public async Task<IActionResult> PostCidadaoAnonimo(Guid id)
+        {
+            try
+            {
+                Cidadao cidadao = await service.AnonimizarNome(id);
+                return this.Ok(cidadao);
+            }
+            catch (EntityValidationException e)
+            {
+                return this.HandleError(e);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return this.HandleError(e);
+            }
+            catch (EntityConcurrencyException e)
             {
                 return this.HandleError(e);
             }

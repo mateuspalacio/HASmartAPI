@@ -14,5 +14,7 @@ namespace HASmart.Core.Entities.DTOs
 
         [Required(ErrorMessage = mensagemErroRelatorio)]
         public string RelatorioCidadao { get; set; }
+        public TipoContato TipoContato { get; set; }
+        public DateTime DataRelatorio { get; set; }
     }
 }
