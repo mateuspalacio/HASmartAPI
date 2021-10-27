@@ -23,11 +23,12 @@ namespace HASmart.Core.Entities
     }
     public class Relatorio : AggregateRoot
     {
+        public string RelatorNome { get; set; }
         public string RelatorioCidadao { get; set; }
         [JsonIgnore]
         public Cidadao Cidadao { get; set; }
         [ForeignKey("Cidadao")]
-        [JsonIgnore]
+        [JsonIgnore]            
         [Column(TypeName = "CHAR(36)")]
         public Guid CidadaoId { get; set; }
         public TipoContato TipoContato { get; set; }

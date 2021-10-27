@@ -12,6 +12,7 @@ namespace HASmart.Core.Entities.DTOs
     public class RelatorioPostDTO : DTO
     {
         public const string mensagemErroRelatorio = "O campo Relatorio é obrigatório.";
+        public string RelatorNome { get; set; }
 
         [Required(ErrorMessage = mensagemErroRelatorio)]
         public string RelatorioCidadao { get; set; }
