@@ -35,6 +35,8 @@ namespace HASmart.Core.Entities
         [DataType(DataType.Date)]
         [DefaultValue("20/01/2000")]
         public DateTime DataRelatorio { get; set; } = DateTime.Now.Date;
+        public bool Success { get; set; }
+
 
     }
 }
