@@ -49,6 +49,10 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories
                 if (toUpdate is not null)
                 {
                     toUpdate.RelatorioCidadao = r.RelatorioCidadao;
+                    toUpdate.DataRelatorio = r.DataRelatorio;
+                    toUpdate.RelatorNome = r.RelatorNome;
+                    toUpdate.TipoContato = r.TipoContato;
+                    toUpdate.Success = r.Success;
                     await this.Context.SaveChangesAsync();
                 }
 
@@ -113,6 +117,23 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories
             if (Context.Cidadaos.Any(c => c.Id == cidadaoId))
             {
                 var reports = await Context.Relatorios.Where(x => x.CidadaoId == cidadaoId).ToListAsync();
+                return reports;
+            }
+            //Cidadao c = await this.Context.Cidadaos.Include(x => x.Medicoes).FirstOrDefaultAsync(x => x.Id == id);
+            throw new EntityNotFoundException(typeof(Cidadao));
+        }
+
+        public async Task<List<Relatorio>> LerRelatosParaAnonimo(string anonimo)
+        {
+            if (Context.Cidadaos.Any(c => c.AnonimoNome.Contains(anonimo)))
+            {
+                var reports = new List<Relatorio>();
+                var cidadaos = await Context.Cidadaos.Where(c => c.AnonimoNome.Contains(anonimo)).ToListAsync();
+                foreach (var c in cidadaos)
+                {
+                    var returns = await Context.Relatorios.Where(x => x.CidadaoId == c.Id).ToListAsync();
+                    reports.AddRange(returns);
+                }
                 return reports;
             }
             //Cidadao c = await this.Context.Cidadaos.Include(x => x.Medicoes).FirstOrDefaultAsync(x => x.Id == id);

@@ -12,6 +12,7 @@ namespace HASmart.Core.Repositories
         public Task<Relatorio> CriarRelato(Relatorio r);
         public Task<Relatorio> LerRelato(Guid id, Guid cidadaoId);
         public Task<List<Relatorio>> LerRelatos(Guid cidadaoId);
+        public Task<List<Relatorio>> LerRelatosParaAnonimo(string anonimo);
         public Task<Relatorio> AtualizarRelato(Relatorio r);
         public Task<Relatorio> ApagarRelato(Relatorio r);
 

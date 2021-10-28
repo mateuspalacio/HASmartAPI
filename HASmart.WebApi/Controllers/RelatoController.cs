@@ -83,6 +83,25 @@ namespace HASmart.WebApi.Controllers
                 return this.HandleError(e);
             }
         }
+        /// <summary>
+        /// Retorna os relatos de um cidadão, recebe cidadao id.
+        /// </summary>
+        // GET: api/Relato/{nomeAnonimo}/anonimo
+        [HttpGet("{nomeAnonimo}/anonimo")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [AllowAnonymous]
+        public async Task<ActionResult<List<Relatorio>>> GetRelatosAnonimo(string nomeAnonimo)
+        {
+            try
+            {
+                var r = await _service.LerRelatosParaAnonimo(nomeAnonimo);
+                return r;
+            }
+            catch (EntityValidationException e)
+            {
+                return this.HandleError(e);
+            }
+        }
 
         /// <summary>
         /// Deleta um relato de um cidadão, recebendo id e cidadao id.

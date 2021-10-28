@@ -43,6 +43,11 @@ namespace HASmart.Core.Services
             var r = await this._relatoRep.LerRelatos(cidadaoId);
             return r;
         }
+        public async Task<List<Relatorio>> LerRelatosParaAnonimo(string anonimo)
+        {
+            var r = await this._relatoRep.LerRelatosParaAnonimo(anonimo);
+            return r;
+        }
         public async Task<Relatorio> ApagarRelato(Guid id, Guid cidadaoId)
         {
             var delete = await LerRelato(id, cidadaoId);
