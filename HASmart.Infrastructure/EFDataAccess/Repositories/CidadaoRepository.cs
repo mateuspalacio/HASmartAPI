@@ -253,6 +253,37 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories {
                 }
             }
         }
+        public async Task<int> BuscarIdAtual()
+        {
+            try
+            {
+                List<Cidadao> result = null;
+                int response = 0;
+                if (await Context.Cidadaos.AnyAsync(u => u.AnonimoNome != null))
+                {
+                    result =  await Context.Cidadaos.Where(u => u.AnonimoNome != null).ToListAsync();
+
+                }
+
+                if (result is not null)
+                {
+                    response = int.Parse(result.OrderByDescending(u => int.Parse(u.AnonimoNome)).First().AnonimoNome) + 1;
+                } 
+                
+                return response;
+            }
+            catch
+            {
+                if (!await this.Context.Cidadaos.AnyAsync())
+                {
+                    throw new EntityNotFoundException(typeof(Cidadao));
+                }
+                else
+                {
+                    throw new EntityConcurrencyException(typeof(Cidadao));
+                }
+            }
+        }
 
     }
 }

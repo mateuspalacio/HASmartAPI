@@ -17,5 +17,6 @@ namespace HASmart.Core.Repositories {
         public Task<Cidadao> ApagarCidadao(Cidadao c);
         public Task<List<Cidadao>> BuscarPorNome(string name);
         public Task<List<Cidadao>> BuscarPorNomeAnonimo(string name);
+        public Task<int> BuscarIdAtual();
     }
 }
