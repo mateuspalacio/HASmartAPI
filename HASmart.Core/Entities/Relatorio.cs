@@ -32,9 +32,7 @@ namespace HASmart.Core.Entities
         [Column(TypeName = "CHAR(36)")]
         public Guid CidadaoId { get; set; }
         public TipoContato TipoContato { get; set; }
-        [DataType(DataType.Date)]
-        [DefaultValue("20/01/2000")]
-        public DateTime DataRelatorio { get; set; } = DateTime.Now.Date;
+        public DateTime DataRelatorio { get; set; } = DateTime.Now;
         public bool Success { get; set; }
 
 

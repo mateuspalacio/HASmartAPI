@@ -23,8 +23,6 @@ namespace HASmart.Core.Entities {
         public float Peso { get; set; }
         public List<Medicamento> Medicamentos{ get; set; }
         
-        [DataType(DataType.Date)]
-        [DefaultValue("01/01/2000")]
         public DateTime DataHora { get; set; }
     }
 }

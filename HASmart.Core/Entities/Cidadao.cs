@@ -17,9 +17,6 @@ namespace HASmart.Core.Entities {
         [DataType(DataType.Date)]
         [DefaultValue("01/01/2000")]
         public DateTime DataNascimento { get; set; }
-
-        [DataType(DataType.Date)]
-        [DefaultValue("01/01/2000")]
         public DateTime DataCadastro { get; set; } = DateTime.Now.Date;
         public DadosPessoais DadosPessoais { get; set; }
         public IndicadorRiscoHAS IndicadorRiscoHAS { get; set; }

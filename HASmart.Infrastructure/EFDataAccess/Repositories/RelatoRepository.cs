@@ -122,7 +122,20 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories
             //Cidadao c = await this.Context.Cidadaos.Include(x => x.Medicoes).FirstOrDefaultAsync(x => x.Id == id);
             throw new EntityNotFoundException(typeof(Cidadao));
         }
+        public async Task<List<Relatorio>> LerAllRelatos()
+        {
+            try
+            {
+                var reports = await Context.Relatorios.ToListAsync();
+                return reports;
+            } catch
+            {
+                throw new EntityNotFoundException(typeof(Relatorio));
 
+            }
+
+            //Cidadao c = await this.Context.Cidadaos.Include(x => x.Medicoes).FirstOrDefaultAsync(x => x.Id == id);
+        }
         public async Task<List<Relatorio>> LerRelatosParaAnonimo(string anonimo)
         {
             if (Context.Cidadaos.Any(c => c.AnonimoNome.Contains(anonimo)))

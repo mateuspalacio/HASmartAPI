@@ -17,8 +17,6 @@ namespace HASmart.Core.Entities.DTOs
         [Required(ErrorMessage = mensagemErroRelatorio)]
         public string RelatorioCidadao { get; set; }
         public TipoContato TipoContato { get; set; }
-        [DataType(DataType.Date)]
-        [DefaultValue("20/01/2000")]
         public DateTime DataRelatorio { get; set; }
         public bool Success { get; set; }
     }

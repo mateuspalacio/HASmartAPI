@@ -45,16 +45,16 @@ namespace HASmart.WebApi
             services.AddTransient<MedicoService>();
             services.AddTransient<RelatoService>();
 
-            IsoDateTimeConverter converter = new IsoDateTimeConverter
-            {
-                Culture = System.Globalization.CultureInfo.InvariantCulture,
-                DateTimeFormat = "dd/MM/yyyy",
-                DateTimeStyles = System.Globalization.DateTimeStyles.AssumeLocal
-            };
+            //IsoDateTimeConverter converter = new IsoDateTimeConverter
+            //{
+            //    Culture = System.Globalization.CultureInfo.InvariantCulture,
+            //    DateTimeFormat = "dd/MM/yyyy HH:mm",
+            //    DateTimeStyles = System.Globalization.DateTimeStyles.AssumeLocal
+            //};
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.Converters.Add(converter);
+                //options.SerializerSettings.Converters.Add(converter);
             });
             services.AddSwaggerGen(c =>
             {
