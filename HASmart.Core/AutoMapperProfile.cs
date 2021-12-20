@@ -21,6 +21,7 @@ namespace HASmart.Core {
             this.CreateMap<MedicamentoPostDTO, Medicamento>(MemberList.Source);
             this.CreateMap<RegistroPostDTO, Registro>(MemberList.Source);
             this.CreateMap<MedicoPostDTO, Medico>(MemberList.Source);
+            this.CreateMap<MedicoOperadorPutDto, Medico>(MemberList.Source);
             this.CreateMap<RelatorioPostDTO, Relatorio>(MemberList.Source);
             //this.CreateMap<DispencacaoPostDTO, Dispencacao>(MemberList.Source);
         }

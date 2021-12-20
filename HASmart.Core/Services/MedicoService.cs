@@ -90,5 +90,40 @@ namespace HASmart.Core.Services
 
             return await MedicoRepository.GetOperador(o);
         }
+
+        public async Task<Medico> AtualizarOperador(MedicoOperadorPutDto o)
+        {
+            Medico m = Mapper.Map<Medico>(o);
+            if (string.IsNullOrEmpty(o.Nome))
+            {
+                throw new EntityNotFoundException(typeof(Medico));
+            }
+
+            return await MedicoRepository.UpdateOperador(m);
+        }
+        public async Task<Medico> AdicionarCrm(MedicoPostDTO o, Guid id)
+        {
+            Medico m = Mapper.Map<Medico>(o);
+            var x = await MedicoRepository.BuscarViaId(id);
+            if (x is null)
+            {
+                throw new EntityNotFoundException(typeof(Medico));
+            }
+            if (await this.MedicoRepository.AlreadyExists(m.Crm))
+            {
+                throw new EntityValidationException(m.GetType(), "Medico", "Já existe alguém com o mesmo CRM/Código");
+            }
+            return await MedicoRepository.AddCrm(x.Id, x.Nome, m.Crm);
+        }
+        public async Task<Medico> AdicionarEmail(MedicoPostDTO o, Guid id)
+        {
+            Medico m = Mapper.Map<Medico>(o);
+            var x = await MedicoRepository.BuscarViaId(id);
+            if (x is null)
+            {
+                throw new EntityNotFoundException(typeof(Medico));
+            }
+            return await MedicoRepository.AddEmail(x.Id, x.Nome, m.Email);
+        }
     }
 }

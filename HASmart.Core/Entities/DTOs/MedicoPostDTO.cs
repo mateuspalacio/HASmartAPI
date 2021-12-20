@@ -15,5 +15,8 @@ namespace HASmart.Core.Entities.DTOs
         [Required(ErrorMessage = mensagemErroCrm)]
         [RegularExpression(@"^\d+", ErrorMessage = mensagemErroCrm)]
         public string Crm { get; set; }
+        public string Senha { get; set; }
+        public string Email { get; set; }
+
     }
 }

@@ -80,5 +80,45 @@ namespace HASmart.WebApi.Controllers
                 return this.HandleError(e);
             }
         }
+
+        [HttpPut("operador/atualizarsenha")]
+        [AllowAnonymous]
+        public async Task<ActionResult<Medico>> EditOperador([FromBody]MedicoOperadorPutDto operador)
+        {
+            try
+            {
+                return await service.AtualizarOperador(operador);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return this.HandleError(e);
+            }
+        }
+        [HttpPost("operador/adicionarcrm")]
+        [AllowAnonymous]
+        public async Task<ActionResult<Medico>> AdicionarCrm([FromBody] MedicoPostDTO operador, Guid id)
+        {
+            try
+            {
+                return await service.AdicionarCrm(operador, id);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return this.HandleError(e);
+            }
+        }
+        [HttpPost("operador/adicionaremail")]
+        [AllowAnonymous]
+        public async Task<ActionResult<Medico>> AdicionarEmail([FromBody] MedicoPostDTO operador, Guid id)
+        {
+            try
+            {
+                return await service.AdicionarEmail(operador, id);
+            }
+            catch (EntityNotFoundException e)
+            {
+                return this.HandleError(e);
+            }
+        }
     }
 }

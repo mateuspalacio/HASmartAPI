@@ -54,6 +54,8 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories
         public async Task<Medico> GetOperador(Medico r)
         {
             Medico o = await Context.Medicos.FirstOrDefaultAsync(x => x.Nome == r.Nome && x.Senha == r.Senha);
+            if(o is null)
+                throw new EntityNotFoundException(typeof(Medico));
             o.cidadaosAtuais = await Context.Cidadaos.Where(x => x.medicoAtual.Id == o.Id).ToListAsync();
             foreach (var cit in o.cidadaosAtuais)
             {
@@ -75,6 +77,37 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories
             }
             return o ?? throw new EntityNotFoundException(typeof(Medico));
         }
+        public async Task<Medico> UpdateOperador(Medico r)
+        {
+            Medico o = await Context.Medicos.FirstOrDefaultAsync(x => x.Nome == r.Nome && x.Crm == r.Crm);
+            if (o == null)
+                throw new EntityNotFoundException(typeof(Medico));
+            Context.Medicos.Update(o);
+            await Context.SaveChangesAsync();
+            return o ?? throw new EntityNotFoundException(typeof(Medico));
+        }
 
+        public async Task<Medico> AddCrm(Guid id, string username, string crm)
+        {
+            Medico o = await Context.Medicos.FirstOrDefaultAsync(x => x.Id == id && x.Nome == username);
+            if (o == null)
+                throw new EntityNotFoundException(typeof(Medico));
+            if (o.Crm == crm)
+                return o;
+            o.Crm = crm;
+            await Context.SaveChangesAsync();
+            return o ?? throw new EntityNotFoundException(typeof(Medico));
+        }
+        public async Task<Medico> AddEmail(Guid id, string username, string email)
+        {
+            Medico o = await Context.Medicos.FirstOrDefaultAsync(x => x.Id == id && x.Nome == username);
+            if (o == null)
+                throw new EntityNotFoundException(typeof(Medico));
+            if (o.Email == email)
+                return o;
+            o.Email = email;
+            await Context.SaveChangesAsync();
+            return o ?? throw new EntityNotFoundException(typeof(Medico));
+        }
     }
 }

@@ -11,7 +11,12 @@ namespace HASmart.Core.Repositories
         public Task<bool> AlreadyExists(string crm);
         public Task<Medico> Cadastrar(Medico m);
         public Task<Medico> Atualizar(Medico m);
+        public Task<Medico> AddCrm(Guid id, string username, string crm);
+        public Task<Medico> AddEmail(Guid id, string username, string email);
+
         public Task<Medico> GetOperador(Medico o);
+        public Task<Medico> UpdateOperador(Medico o);
+
 
     }
 }

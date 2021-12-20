@@ -18,6 +18,8 @@ namespace HASmart.Core.Entities
         //public string Cpf { get; set; }
         [JsonIgnore]
         public string Senha { get; set; }
+        public string Email { get; set; }
+
         //public List<Cidadao> cidadaosAtendidos { get; set; }  
     }
 }
