@@ -82,7 +82,8 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories
             Medico o = await Context.Medicos.FirstOrDefaultAsync(x => x.Nome == r.Nome && x.Crm == r.Crm);
             if (o == null)
                 throw new EntityNotFoundException(typeof(Medico));
-            Context.Medicos.Update(o);
+            o.Senha = r.Senha;
+            o.Email = r.Email;
             await Context.SaveChangesAsync();
             return o ?? throw new EntityNotFoundException(typeof(Medico));
         }
