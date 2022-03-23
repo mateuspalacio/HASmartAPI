@@ -170,8 +170,8 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories {
             throw new EntityNotFoundException(typeof(Cidadao));
         }
 
-        public async Task<bool> AlreadyExists(string cpf, string rg) {
-            return await this.Context.Cidadaos.AnyAsync(x => x.Cpf == cpf || x.Rg == rg);
+        public async Task<bool> AlreadyExists(string cpf) {
+            return await this.Context.Cidadaos.AnyAsync(x => x.Cpf == cpf);
         }
 
         public async Task<Cidadao> Cadastrar(Cidadao c) {

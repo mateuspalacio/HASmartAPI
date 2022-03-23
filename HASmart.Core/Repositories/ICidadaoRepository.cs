@@ -11,7 +11,7 @@ namespace HASmart.Core.Repositories {
         public Task<Cidadao> BuscarViaId(Guid id);
         public Task<Cidadao> BuscarViaCpf(string cpf);
         public Task<Cidadao> BuscarViaRg(string rg);
-        public Task<bool> AlreadyExists(string cpf, string rg);
+        public Task<bool> AlreadyExists(string cpf);
         public Task<Cidadao> Cadastrar(Cidadao c);
         public Task<Cidadao> Atualizar(Cidadao c);
         public Task<Cidadao> ApagarCidadao(Cidadao c);

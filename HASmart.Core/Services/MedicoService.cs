@@ -47,7 +47,7 @@ namespace HASmart.Core.Services
             Medico m = await this.MedicoRepository.BuscarViaId(id);
             List<Cidadao> cidadaos = new List<Cidadao>();
             foreach(string cpf in cpfs){
-                if (await this.CidadaoService.CidadaoRepositorio.AlreadyExists(cpf,cpf)) {
+                if (await this.CidadaoService.CidadaoRepositorio.AlreadyExists(cpf)) {
                     Cidadao c = await this.CidadaoService.BuscarViaCpf(cpf);
                     bool conf = true;
                     if(m.cidadaosAtuais != null) {
