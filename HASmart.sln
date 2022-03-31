@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31613.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HASmart.WebApi", "HASmart.WebApi\HASmart.WebApi.csproj", "{7AC581E1-D4CA-4765-803D-3324F012E7A9}"
 EndProject
@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{0EFB481D-4B6D-485B-BF55-A9A4A55E2809}"
 	ProjectSection(SolutionItems) = preProject
 		githubci-actions.yml = githubci-actions.yml
+		.github\workflows\githubci-actions.yml = .github\workflows\githubci-actions.yml
 	EndProjectSection
 EndProject
 Global
