@@ -285,5 +285,24 @@ namespace HASmart.Infrastructure.EFDataAccess.Repositories {
             }
         }
 
+        public async Task<long> TotalMedicoesDeCidadaos(Guid Id)
+        {
+            try
+            {
+                var cidadaoMedicoes = Context.Medicoes.Where(x => x.CidadaoId == Id).ToList().Count();
+                return cidadaoMedicoes;
+            }
+            catch(Exception)
+            {
+                if (!await this.Context.Cidadaos.AnyAsync(e => e.Id == Id))
+                {
+                    throw new EntityNotFoundException(typeof(Cidadao));
+                }
+                else
+                {
+                    throw new EntityConcurrencyException(typeof(Cidadao));
+                }
+            }
+        }
     }
 }

@@ -371,5 +371,9 @@ namespace HASmart.Core.Services {
 
             return possibleDelimiters[0];
         }
+        public async Task<long> TotalMedicoes(Guid Id)
+        {
+            return await CidadaoRepositorio.TotalMedicoesDeCidadaos(Id);
+        }
     }
 }

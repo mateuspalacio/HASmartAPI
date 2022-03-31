@@ -18,5 +18,6 @@ namespace HASmart.Core.Repositories {
         public Task<List<Cidadao>> BuscarPorNome(string name);
         public Task<List<Cidadao>> BuscarPorNomeAnonimo(string name);
         public Task<int> BuscarIdAtual();
+        public Task<long> TotalMedicoesDeCidadaos(Guid Id);
     }
 }

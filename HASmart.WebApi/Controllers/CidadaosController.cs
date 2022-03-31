@@ -233,5 +233,25 @@ namespace HASmart.WebApi.Controllers {
                 return this.HandleError(e);
             }
         }
+
+        /// <summary>
+        /// Receber CSV, Cadastra cidadãos e adicionar medições
+        /// </summary>
+        // POST: api/Cidadaos/CSV
+        [HttpGet("medicoes/total")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> PostCSV([FromQuery] Guid id)
+        {
+            try
+            {
+                var res = await service.TotalMedicoes(id);
+                return Ok(res);
+            }
+            catch (EntityValidationException e)
+            {
+                return this.HandleError(e);
+            }
+        }
     }
 }
